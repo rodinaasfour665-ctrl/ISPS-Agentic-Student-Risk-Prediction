@@ -288,16 +288,4 @@ Every prediction is automatically appended to `isps_student_log.xlsx` with color
 - ARIMA trend modeling
 - Model serialization
 
----
 
-## 🔒 Notes
-
-- The `models/` directory is not included in this repo. Train using the notebook or request pre-trained artifacts separately.
-- Email credentials in `main.py` should be moved to environment variables before any production deployment.
-- The system is designed for **educational/research** use.
-
----
-
-## 👩‍💻 Author
-
-Built as a graduation project — Faculty of Computers and Information Systems, Egyptian Chinese University.
