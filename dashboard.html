@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ISPS — Intelligent Student Performance System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#06111f;--bg2:#091927;--bg3:#0c2035;--card:#0d2238;
+  --border:rgba(56,165,255,0.18);--border-h:rgba(56,165,255,0.45);
+  --blue:#38a5ff;--blue-dim:#1a6fb5;--cyan:#00d4ff;
+  --green:#22c55e;--red:#ef4444;--orange:#f97316;
+  --yellow:#eab308;--purple:#a855f7;
+  --text:#cee4ff;--text2:#7aa8d4;--text3:#3d6a99;
+  --r:10px;--shadow:0 4px 24px rgba(0,0,0,0.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:14px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--blue-dim);border-radius:2px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(56,165,255,0.06) 0%,transparent 60%)}
+
+/* TOPBAR */
+.top{position:sticky;top:0;z-index:100;height:52px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;
+  background:rgba(6,17,31,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px)}
+.top-left{display:flex;align-items:center;gap:12px}
+.logo{width:34px;height:34px;border-radius:50%;border:2px solid var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 16px rgba(56,165,255,0.3);animation:spin 10s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.brand{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--blue);letter-spacing:1px}
+.brand-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.top-right{display:flex;align-items:center;gap:18px}
+.live-badge{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;
+  border:1px solid rgba(34,197,94,0.4);color:var(--green);font-size:11px;font-weight:600;letter-spacing:1px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#clock{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2)}
+#upd{font-size:11px;color:var(--text3)}
+
+/* PAGES */
+.page{display:none;position:relative;z-index:1;animation:fi .3s ease}
+.page.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* HOME */
+.hero{display:grid;grid-template-columns:1fr 310px;gap:24px;padding:28px 24px 20px;align-items:start}
+.hero-title{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1.2;
+  background:linear-gradient(120deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-tagline{font-size:11px;color:var(--text2);letter-spacing:2px;margin-top:4px}
+.hero-desc{font-size:13px;color:var(--text2);margin-top:10px;line-height:1.7;max-width:480px}
+.sys-badge{display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+  padding:5px 12px;border-radius:20px;border:1px solid rgba(34,197,94,0.35);
+  background:rgba(34,197,94,0.07);font-size:11px;letter-spacing:1px;color:var(--green)}
+.mini-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.mini-total{font-family:'Syne',sans-serif;font-size:46px;font-weight:800;color:var(--text);line-height:1}
+.mini-lbl{font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:12px}
+.mini-row{display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;border-radius:6px;background:rgba(56,165,255,0.05);
+  border:1px solid var(--border);margin-bottom:8px}
+.mini-row-lbl{font-size:12px;color:var(--text2)}
+.mini-row-val{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--blue);font-weight:500}
+.conf-bar{width:70px;height:6px;background:rgba(56,165,255,0.1);border-radius:3px;overflow:hidden}
+.conf-fill{height:100%;background:linear-gradient(90deg,var(--blue-dim),var(--blue));border-radius:3px;transition:width .8s ease}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:0 24px 18px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;transition:.25s}
+.kpi:hover{border-color:var(--border-h)}
+.kpi.red{border-color:rgba(239,68,68,.3)}.kpi.orange{border-color:rgba(249,115,22,.3)}.kpi.green{border-color:rgba(34,197,94,.3)}
+.kpi-lbl{font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:6px}
+.kpi-val{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:var(--text)}
+.kpi.red .kpi-val{color:var(--red)}.kpi.orange .kpi-val{color:var(--orange)}.kpi.green .kpi-val{color:var(--green)}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* BUTTONS */
+.btns{display:flex;gap:12px;padding:0 24px 20px}
+.btn-blue{flex:1;padding:13px;border:none;border-radius:var(--r);cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.5px;
+  background:linear-gradient(135deg,#1a6fb5,var(--blue));color:#fff;
+  box-shadow:0 4px 16px rgba(56,165,255,0.25);transition:.25s}
+.btn-blue:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,165,255,0.4)}
+.btn-purple{flex:1;padding:13px;border:none;border-radius:var(--r);cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.5px;
+  background:linear-gradient(135deg,#6d28d9,var(--purple));color:#fff;
+  box-shadow:0 4px 16px rgba(168,85,247,0.25);transition:.25s}
+.btn-purple:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(168,85,247,0.4)}
+
+/* ZONES */
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:0 24px 20px}
+.zone-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px;cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+.zone-card:hover{border-color:var(--border-h);transform:translateY(-3px);box-shadow:var(--shadow)}
+.zone-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:0;transition:.3s}
+.zone-card:hover::after{opacity:1}
+.zn{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:rgba(56,165,255,.2);margin-bottom:6px}
+.zt{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:5px}
+.zd{font-size:12px;color:var(--text2);line-height:1.5}
+.zm{margin-top:10px;font-size:12px;font-weight:600}
+.zm.green{color:var(--green)}.zm.blue{color:var(--blue)}.zm.red{color:var(--red)}.zm.orange{color:var(--orange)}
+.zarr{position:absolute;right:14px;bottom:14px;width:26px;height:26px;
+  border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;
+  justify-content:center;color:var(--blue);font-size:12px;transition:.3s}
+.zone-card:hover .zarr{background:var(--blue);color:#000;border-color:var(--blue)}
+
+/* FEED */
+.feed-bar{margin:0 24px 24px;padding:12px 18px;border-radius:var(--r);
+  background:var(--card);border:1px solid var(--border);display:flex;align-items:center;gap:16px;overflow:hidden}
+.feed-lbl{font-size:10px;letter-spacing:2px;color:var(--text2);white-space:nowrap;font-weight:600}
+.feed-wrap{flex:1;overflow:hidden}
+.feed-scroll{display:flex;gap:24px;animation:scroll 22s linear infinite}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.fi{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:12px}
+.fdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.fdot.H{background:var(--red)}.fdot.M{background:var(--orange)}.fdot.L{background:var(--green)}
+.fsid{color:var(--blue);font-weight:600;font-family:'JetBrains Mono',monospace}
+.frisk{font-weight:600}.ftime{color:var(--text3);font-size:10px}
+
+/* DETAIL PAGES */
+.detail{padding:24px}
+.dheader{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.back{padding:7px 16px;border:1px solid var(--border);border-radius:var(--r);
+  background:transparent;color:var(--blue);cursor:pointer;font-size:13px;font-weight:500;transition:.2s;display:flex;align-items:center;gap:6px}
+.back:hover{background:var(--blue);color:#000;border-color:var(--blue)}
+.dtitle{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--blue)}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.ptitle{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--text2);margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.mbox{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px}
+.mbox-lbl{font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:4px;font-weight:500}
+.mbox-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--blue)}
+.mbox-val.red{color:var(--red)}.mbox-val.green{color:var(--green)}.mbox-val.orange{color:var(--orange)}
+.mbox-val.purple{color:var(--purple)}.mbox-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:1.5px;color:var(--text2);font-weight:600}
+td{padding:9px 10px;border-bottom:1px solid rgba(56,165,255,0.06);color:var(--text);vertical-align:middle}
+tr:hover td{background:rgba(56,165,255,0.03)}
+.mono{font-family:'JetBrains Mono',monospace}
+
+.pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px}
+.pill.H{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.pill.M{background:rgba(249,115,22,.1);color:var(--orange);border:1px solid rgba(249,115,22,.3)}
+.pill.L{background:rgba(34,197,94,.08);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.pill.E{background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.3)}
+
+.pbar{height:6px;background:rgba(56,165,255,.08);border-radius:3px;overflow:hidden;margin-top:5px}
+.pfill{height:100%;border-radius:3px;transition:width 1s ease}
+.pfill.blue{background:linear-gradient(90deg,var(--blue-dim),var(--blue))}
+.pfill.red{background:linear-gradient(90deg,#b91c1c,var(--red))}
+.pfill.green{background:linear-gradient(90deg,#15803d,var(--green))}
+.pfill.orange{background:linear-gradient(90deg,#c2410c,var(--orange))}
+
+.cbar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px}
+.cbar-lbl{width:88px;color:var(--text2);font-size:11px}
+.cbar-wrap{flex:1;height:7px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden}
+.cbar-fill{height:100%;border-radius:4px}
+.cbar-num{width:36px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)}
+
+.abox{padding:11px 14px;border-radius:8px;margin-bottom:8px;display:flex;align-items:center;gap:10px;font-size:12px}
+.abox.ok{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);color:var(--green)}
+.abox.warn{background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.3);color:var(--orange)}
+.abox.crit{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.3);color:var(--red)}
+.abox.info{background:rgba(56,165,255,.06);border:1px solid rgba(56,165,255,.2);color:var(--blue)}
+
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.flbl{font-size:11px;color:var(--text2);font-weight:500;letter-spacing:.5px}
+.finp{background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+  padding:8px 11px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:.2s;width:100%}
+.finp:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(56,165,255,.1)}
+.fsubmit{margin-top:14px;padding:11px 26px;border:none;border-radius:var(--r);cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+  background:linear-gradient(135deg,var(--blue-dim),var(--blue));color:#fff;
+  box-shadow:0 4px 16px rgba(56,165,255,.3);transition:.25s}
+.fsubmit:hover{transform:translateY(-2px)}
+
+.rcard{border-radius:var(--r);padding:20px;margin-top:14px;border-left:3px solid var(--blue)}
+.rcard.H{border-left-color:var(--red);background:rgba(239,68,68,.04)}
+.rcard.M{border-left-color:var(--orange);background:rgba(249,115,22,.03)}
+.rcard.L{border-left-color:var(--green);background:rgba(34,197,94,.03)}
+.rcard.E{border-left-color:var(--purple);background:rgba(168,85,247,.03)}
+.rrisk{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px}
+.rrisk.H{color:var(--red)}.rrisk.M{color:var(--orange)}.rrisk.L{color:var(--green)}.rrisk.E{color:var(--purple)}
+.rnl{font-size:13px;color:var(--text2);line-height:1.65;font-style:italic;margin-bottom:14px;
+  padding:10px 14px;background:rgba(56,165,255,.05);border-radius:6px;border-left:2px solid var(--blue)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{padding:4px 11px;border-radius:20px;font-size:11px;background:rgba(56,165,255,.07);border:1px solid var(--border);color:var(--text2)}
+.chip b{color:var(--blue)}
+.steps-list{font-size:12px}
+.steps-list li{padding:4px 0;color:var(--text2);display:flex;align-items:center;gap:7px;list-style:none}
+.steps-list li::before{content:'';width:5px;height:5px;background:var(--blue);border-radius:50%;flex-shrink:0}
+.rmeta{margin-top:12px;font-size:11px;color:var(--text3)}
+.rmeta span{color:var(--blue)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(56,165,255,.15);
+  border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+
+.sig{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;font-size:12px;border:1px solid var(--border);background:var(--bg3);margin-bottom:8px}
+.sig-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sig-dot.on{background:var(--red);box-shadow:0 0 8px rgba(239,68,68,.6)}
+.sig-dot.off{background:var(--green);box-shadow:0 0 8px rgba(34,197,94,.4)}
+.path-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px;border:1px solid var(--border);color:var(--text2)}
+.footer{text-align:center;padding:14px;font-size:10px;color:var(--text3);border-top:1px solid var(--border);letter-spacing:1px}
+.rand-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.score-ring{width:100px;height:100px;position:relative;margin:0 auto}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:22px;font-weight:800}
+.ag-row{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid rgba(56,165,255,.06)}
+.ag-num{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:rgba(56,165,255,.25);width:28px;flex-shrink:0}
+.ag-status{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;flex-shrink:0}
+.ag-status.ACTIVE{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.ag-status.STANDBY{background:rgba(249,115,22,.08);color:var(--orange);border:1px solid rgba(249,115,22,.25)}
+.ag-status.READY{background:rgba(56,165,255,.08);color:var(--blue);border:1px solid rgba(56,165,255,.2)}
+
+/* ══════════════════════════════════════
+   LIVING CENTROIDS WIDGET STYLES
+══════════════════════════════════════ */
+.lc-widget{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:18px 20px;
+  margin-bottom:14px;
+  position:relative;
+  overflow:hidden;
+}
+/* الخط المتحرك في الخلفية */
+.lc-widget::before{
+  content:'';
+  position:absolute;
+  top:0;left:-100%;
+  width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);
+  animation:lc-scan 3s ease-in-out infinite;
+}
+@keyframes lc-scan{0%{left:-100%}100%{left:100%}}
+
+.lc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.lc-title{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--text2)}
+.lc-status-badge{
+  display:flex;align-items:center;gap:6px;
+  padding:3px 10px;border-radius:20px;
+  font-size:10px;font-weight:600;
+  border:1px solid rgba(34,197,94,.3);
+  background:rgba(34,197,94,.07);
+  color:var(--green);
+  transition:.4s;
+}
+.lc-status-badge.moving{
+  border-color:rgba(239,68,68,.4);
+  background:rgba(239,68,68,.08);
+  color:var(--red);
+}
+.lc-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);
+  animation:pulse 1.4s infinite;
+  transition:.4s;
+}
+.lc-status-badge.moving .lc-dot{background:var(--red)}
+
+/* الـ 3 bars للـ clusters */
+.lc-clusters{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.lc-cluster-row{display:flex;align-items:center;gap:10px}
+.lc-cluster-lbl{
+  width:80px;font-size:11px;color:var(--text2);
+  font-family:'JetBrains Mono',monospace;
+}
+.lc-bar-wrap{
+  flex:1;height:8px;
+  background:rgba(56,165,255,.06);
+  border-radius:4px;overflow:hidden;
+  position:relative;
+}
+.lc-bar-fill{
+  height:100%;border-radius:4px;
+  transition:width 0.7s cubic-bezier(.4,0,.2,1);
+  position:relative;
+}
+/* shimmer effect على الـ bar لما بيتحرك */
+.lc-bar-fill.active::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.3) 50%,transparent 100%);
+  animation:shimmer 1.2s infinite;
+}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+.lc-bar-val{
+  width:70px;text-align:right;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--text2);
+}
+
+/* Delta pulse indicator */
+.lc-delta-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:10px;
+}
+.lc-delta-lbl{font-size:11px;color:var(--text2);flex:1}
+.lc-delta-bar-wrap{
+  width:120px;height:6px;
+  background:rgba(56,165,255,.08);
+  border-radius:3px;overflow:hidden;
+}
+.lc-delta-bar{
+  height:100%;border-radius:3px;
+  background:var(--blue);
+  transition:width 0.6s ease, background 0.4s;
+  width:0%;
+}
+.lc-delta-bar.hot{background:var(--red)}
+.lc-delta-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:600;
+  color:var(--blue);
+  min-width:70px;text-align:right;
+  transition:color .4s;
+}
+.lc-delta-val.hot{color:var(--red)}
+
+/* Counter chips */
+.lc-footer{display:flex;gap:8px;flex-wrap:wrap}
+.lc-chip{
+  padding:4px 10px;border-radius:20px;font-size:10px;
+  background:rgba(56,165,255,.06);
+  border:1px solid var(--border);color:var(--text2);
+}
+.lc-chip b{color:var(--blue)}
+
+/* Flash animation لما تيجي بيانات جديدة */
+@keyframes lc-flash{
+  0%{border-color:rgba(56,165,255,.6);box-shadow:0 0 12px rgba(56,165,255,.3)}
+  100%{border-color:var(--border);box-shadow:none}
+}
+.lc-widget.flash{animation:lc-flash .6s ease}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="top">
+  <div class="top-left">
+    <div class="logo">
+      <svg width="14" height="14" fill="none" stroke="#38a5ff" stroke-width="2.5" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/>
+        <line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/>
+        <line x1="18" y1="12" x2="22" y2="12"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand">ISPS</div>
+      <div class="brand-sub">Intelligent Student Performance System</div>
+    </div>
+  </div>
+  <div class="top-right">
+    <div id="clock"></div>
+    <div id="upd">Last Updated: —</div>
+    <div class="live-badge"><div class="dot"></div>LIVE</div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="pg-home">
+  <div class="hero">
+    <div>
+      <div class="hero-title">Intelligent Student<br>Performance System</div>
+      <div class="hero-tagline">REAL-TIME RISK DETECTION · FCM · SVM · SHAP · ARIMA · REACT</div>
+      <div class="hero-desc">Our agentic system continuously analyses student behaviour, predicts academic risk in real time using a 7-path ReAct decision loop, dispatches personalised interventions, and monitors its own degradation.</div>
+      <div class="sys-badge"><div class="dot"></div>SYSTEM ACTIVE &amp; MONITORING</div>
+    </div>
+    <div class="mini-panel">
+      <div class="mini-lbl">TOTAL ANALYZED</div>
+      <div class="mini-total" id="h-total">0</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:16px">Students Analyzed</div>
+      <div class="mini-row"><div class="mini-row-lbl">Live Events</div><div class="mini-row-val" id="h-events">0</div></div>
+      <div class="mini-row"><div class="mini-row-lbl">Active Interventions</div><div class="mini-row-val" id="h-interv">0</div></div>
+      <div class="mini-row">
+        <div><div class="mini-row-lbl">Prediction Confidence</div>
+          <div class="conf-bar" style="margin-top:5px"><div class="conf-fill" id="h-conf-bar" style="width:0"></div></div>
+        </div>
+        <div class="mini-row-val" id="h-conf">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-lbl">TOTAL STUDENTS</div><div class="kpi-val" id="kpi-t">0</div><div class="kpi-sub">Live Count</div></div>
+    <div class="kpi red"><div class="kpi-lbl">HIGH RISK</div><div class="kpi-val" id="kpi-h">0</div><div class="kpi-sub">Students</div></div>
+    <div class="kpi orange"><div class="kpi-lbl">MEDIUM RISK</div><div class="kpi-val" id="kpi-m">0</div><div class="kpi-sub">Students</div></div>
+    <div class="kpi green"><div class="kpi-lbl">LOW RISK</div><div class="kpi-val" id="kpi-l">0</div><div class="kpi-sub">Students</div></div>
+  </div>
+
+  <div class="btns">
+    <button class="btn-blue" onclick="goAdd()">Add New Student</button>
+    <button class="btn-purple" onclick="goRandom()">Run Random Student</button>
+  </div>
+
+  <div class="zones">
+    <div class="zone-card" onclick="goZone(1)">
+      <div class="zn">01</div><div class="zt">ZONE 1 — CLUSTER HEALTH</div>
+      <div class="zd">FCM cluster stability, centroid analysis, trend multipliers, and distribution across risk groups.</div>
+      <div class="zm blue" id="z1m">Cluster Stability: —</div><div class="zarr">&#8594;</div>
+    </div>
+    <div class="zone-card" onclick="goZone(2)">
+      <div class="zn">02</div><div class="zt">ZONE 2 — LIVE SCORING</div>
+      <div class="zd">Real-time intelligent scoring engine. 5-signal i-Score with triage filter and ARIMA adjustment.</div>
+      <div class="zm green">Pipeline: <b>ACTIVE</b></div>
+      <div class="zm blue" id="z2m" style="margin-top:4px">Records: —</div><div class="zarr">&#8594;</div>
+    </div>
+    <div class="zone-card" onclick="goZone(3)">
+      <div class="zn">03</div><div class="zt">ZONE 3 — ACTION DISPATCH</div>
+      <div class="zd">Dynamic intervention generation. Action type, timing, and intensity computed from live reasoning.</div>
+      <div class="zm blue" id="z3m">Dispatched: —</div><div class="zarr">&#8594;</div>
+    </div>
+    <div class="zone-card" onclick="goZone(4)">
+      <div class="zn">04</div><div class="zt">ZONE 4 — SHAP RELIABILITY</div>
+      <div class="zd">Implicit RAG via SHAP cosine similarity. Explicit RAG index. ARIMA vote tracking.</div>
+      <div class="zm green" id="z4m">Explainability: —</div><div class="zarr">&#8594;</div>
+    </div>
+    <div class="zone-card" onclick="goZone(5)">
+      <div class="zn">05</div><div class="zt">ZONE 5 — OUTCOME TRACKING</div>
+      <div class="zd">Log and track intervention outcomes. Recovery rate computed from real student feedback.</div>
+      <div class="zm blue" id="z5m">Recovery Rate: —</div><div class="zarr">&#8594;</div>
+    </div>
+    <div class="zone-card" onclick="goZone(6)">
+      <div class="zn">06</div><div class="zt">ZONE 6 — SYSTEM ALERTS</div>
+      <div class="zd">Dual-signal drift detection. Signal A: SVM gap. Signal B: feature distribution. Rollback gating.</div>
+      <div class="zm" id="z6m">Active Alerts: —</div><div class="zarr">&#8594;</div>
+    </div>
+  </div>
+
+  <div class="feed-bar">
+    <div class="feed-lbl">LIVE ACTIVITY FEED</div>
+    <div class="feed-wrap"><div id="feed-inner" class="feed-scroll"></div></div>
+  </div>
+  <div class="footer">Intelligent Student Performance System &copy; 2026 &nbsp;&middot;&nbsp; FCM &middot; SVM &middot; SHAP &middot; ARIMA &middot; ReAct &middot; RAG</div>
+</div>
+
+<!-- ADD STUDENT -->
+<div class="page" id="pg-add">
+  <div class="detail">
+    <div class="dheader">
+      <button class="back" onclick="goHome()">&#8592; Back</button>
+      <div class="dtitle">ADD NEW STUDENT — FULL REACT ANALYSIS</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">STUDENT INPUT — 19 FEATURES</div>
+      <div class="fgrid" id="add-form"></div>
+      <button class="fsubmit" onclick="submitStudent()">RUN FULL ANALYSIS</button>
+    </div>
+    <div id="add-result"></div>
+  </div>
+</div>
+
+<!-- RANDOM STUDENT -->
+<div class="page" id="pg-random">
+  <div class="detail">
+    <div class="dheader">
+      <button class="back" onclick="goHome()">&#8592; Back</button>
+      <div class="dtitle">RANDOM STUDENT — AGENTIC ANALYSIS</div>
+      <button class="btn-purple" style="padding:8px 16px;font-size:12px;margin-left:auto" onclick="goRandom()">Run Another</button>
+    </div>
+    <div id="rand-loading" style="text-align:center;padding:40px;color:var(--text2)">
+      <div class="spinner"></div><div style="margin-top:10px">Analysing student...</div>
+    </div>
+    <div id="rand-result" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ZONE 1 — CLUSTER HEALTH -->
+<div class="page" id="pg-z1">
+  <div class="detail">
+    <div class="dheader">
+      <button class="back" onclick="goHome()">&#8592; Back</button>
+      <div class="dtitle">ZONE 1 — CLUSTER HEALTH</div>
+    </div>
+
+    <!-- ══ LIVING CENTROIDS WIDGET ══ -->
+    <div class="lc-widget" id="lc-widget">
+      <div class="lc-header">
+        <div class="lc-title">⚡ LIVING CENTROIDS — ONLINE FCM UPDATE</div>
+        <div class="lc-status-badge" id="lc-badge">
+          <div class="lc-dot"></div>
+          <span id="lc-badge-txt">STABLE</span>
+        </div>
+      </div>
+
+      <!-- Delta bar -->
+      <div class="lc-delta-row">
+        <div class="lc-delta-lbl">Latest Centroid Shift (Δ)</div>
+        <div class="lc-delta-bar-wrap">
+          <div class="lc-delta-bar" id="lc-delta-bar"></div>
+        </div>
+        <div class="lc-delta-val" id="lc-delta-val">0.000000</div>
+      </div>
+
+      <!-- 3 cluster bars — بيتحدثوا بقيم الـ centroid الأول من كل cluster -->
+      <div class="ptitle" style="margin-bottom:10px">CENTROID VALUES — LIVE (Feature 1: Hours Studied scaled)</div>
+      <div class="lc-clusters" id="lc-clusters">
+        <div class="lc-cluster-row">
+          <div class="lc-cluster-lbl" style="color:var(--green)">LOW RISK</div>
+          <div class="lc-bar-wrap"><div class="lc-bar-fill" id="lc-bar-0" style="width:0%;background:var(--green)"></div></div>
+          <div class="lc-bar-val" id="lc-val-0">—</div>
+        </div>
+        <div class="lc-cluster-row">
+          <div class="lc-cluster-lbl" style="color:var(--orange)">MED RISK</div>
+          <div class="lc-bar-wrap"><div class="lc-bar-fill" id="lc-bar-1" style="width:0%;background:var(--orange)"></div></div>
+          <div class="lc-bar-val" id="lc-val-1">—</div>
+        </div>
+        <div class="lc-cluster-row">
+          <div class="lc-cluster-lbl" style="color:var(--red)">HIGH RISK</div>
+          <div class="lc-bar-wrap"><div class="lc-bar-fill" id="lc-bar-2" style="width:0%;background:var(--red)"></div></div>
+          <div class="lc-bar-val" id="lc-val-2">—</div>
+        </div>
+      </div>
+
+      <!-- Footer chips -->
+      <div class="lc-footer">
+        <div class="lc-chip">Total Shifts <b id="lc-total-shifts">0</b></div>
+        <div class="lc-chip">Moving Last 10 <b id="lc-moving-count">0</b></div>
+        <div class="lc-chip">Avg Δ <b id="lc-avg-delta">0.000000</b></div>
+        <div class="lc-chip">Learning Rate <b id="lc-lr">0.02</b></div>
+      </div>
+    </div>
+    <!-- ══ END LIVING CENTROIDS WIDGET ══ -->
+
+    <div class="g2">
+      <div class="panel">
+        <div class="ptitle">STABILITY METRICS</div>
+        <div class="g3">
+          <div class="mbox"><div class="mbox-lbl">FPC SCORE</div><div class="mbox-val" id="z1-fpc">—</div><div class="mbox-sub">Fuzzy Partition Coeff.</div></div>
+          <div class="mbox"><div class="mbox-lbl">TOTAL ANALYZED</div><div class="mbox-val" id="z1-tot">—</div></div>
+          <div class="mbox"><div class="mbox-lbl">N CLUSTERS</div><div class="mbox-val">3</div></div>
+        </div>
+        <div style="margin-top:18px"><div class="ptitle">RISK DISTRIBUTION</div><div id="z1-dist"></div></div>
+      </div>
+      <div class="panel">
+        <div class="ptitle">CLUSTER DETAILS + ARIMA TREND</div>
+        <div id="z1-clusters"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">FCM CENTROIDS — FEATURE SPACE (LIVE — UPDATING WITH EACH STUDENT)</div>
+      <div id="z1-centers"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">TRAINING vs LIVE SEPARATION</div>
+      <div class="g2">
+        <div class="abox info">OFFLINE CYCLE: FCM clustering → SVM training → SHAP means → RAG index build</div>
+        <div class="abox info">LIVE CYCLE: Centroids shift online with every new student (LR=0.02)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ZONE 2 -->
+<div class="page" id="pg-z2">
+  <div class="detail">
+    <div class="dheader"><button class="back" onclick="goHome()">&#8592; Back</button> <div class="dtitle">
+    ZONE 2 — LIVE SCORING FEED
+  </div>
+
+  <a href="http://127.0.0.1:8000/export-excel"
+     style="
+        padding:8px 18px;
+        border:1px solid var(--green);
+        border-radius:var(--r);
+        color:var(--green);
+        font-size:12px;
+        font-weight:600;
+        text-decoration:none;
+        background:rgba(34,197,94,.07);
+        display:flex;
+        align-items:center;
+        gap:6px;
+        margin-left:auto"
+     download="ISPS_Student_Log.xlsx">
+
+     ⬇ Export Excel
+
+  </a>
+
+</div>
+    <div class="g4">
+      <div class="mbox"><div class="mbox-lbl">PIPELINE STATUS</div><div class="mbox-val green">ACTIVE</div></div>
+      <div class="mbox"><div class="mbox-lbl">TRIAGE TRIGGERS</div><div class="mbox-val orange" id="z2-triage">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">AVG I-SCORE</div><div class="mbox-val" id="z2-avg">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">RAG INDEX SIZE</div><div class="mbox-val" id="z2-rag">—</div></div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="ptitle">5-SIGNAL INTELLIGENT SCORE FORMULA</div>
+      <div class="abox info" style="font-family:'JetBrains Mono',monospace;font-size:11px">
+        i-Score = 0.25×S(dynamic) + 0.20×Gap(SVM) + 0.25×μ(FCM) + 0.15×ARIMA + 0.15×SHAP_reliability
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">RECENT PREDICTIONS — LIVE</div>
+      <table>
+        <thead><tr><th>STUDENT</th><th>RISK</th><th>I-SCORE</th><th>FEATURE RISK</th><th>SVM GAP</th><th>MU</th><th>TRIAGE</th><th>PATH</th><th>TIME</th></tr></thead>
+        <tbody id="z2-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ZONE 3 -->
+<div class="page" id="pg-z3">
+  <div class="detail">
+    <div class="dheader"><button class="back" onclick="goHome()">&#8592; Back</button><div class="dtitle">ZONE 3 — ACTION DISPATCH</div></div>
+    <div class="g4">
+      <div class="mbox"><div class="mbox-lbl">TOTAL DISPATCHED</div><div class="mbox-val" id="z3-tot">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">IMMEDIATE</div><div class="mbox-val red" id="z3-imm">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">STANDARD</div><div class="mbox-val" id="z3-std">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">HUMAN REVIEW</div><div class="mbox-val orange" id="z3-hr">—</div></div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="ptitle">ACTION GENERATION LOGIC</div>
+      <div class="abox info">Actions are dynamically computed from: i-Score + SHAP dominant feature + ARIMA direction + RAG vote outcome.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">ACTION LOG — NL EXPLANATIONS + ARIMA DIRECTION</div>
+      <table>
+        <thead><tr><th>STUDENT</th><th>RISK</th><th>PATH</th><th>ACTION</th><th>TARGET</th><th>INTENSITY</th><th>ARIMA</th><th>TIMING</th><th>NL EXPLANATION</th></tr></thead>
+        <tbody id="z3-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ZONE 4 -->
+<div class="page" id="pg-z4">
+  <div class="detail">
+    <div class="dheader"><button class="back" onclick="goHome()">&#8592; Back</button><div class="dtitle">ZONE 4 — SHAP RELIABILITY</div></div>
+    <div class="g4">
+      <div class="mbox"><div class="mbox-lbl">AVG RELIABILITY</div><div class="mbox-val" id="z4-avg">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">STATUS</div><div class="mbox-val green" id="z4-status">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">ARIMA WITH RAG</div><div class="mbox-val green" id="z4-wr">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">ARIMA vs RAG</div><div class="mbox-val orange" id="z4-ar">—</div></div>
+    </div>
+    <div class="g2" style="margin-top:14px">
+      <div class="panel">
+        <div class="ptitle">IMPLICIT RAG (SHAP COSINE SIMILARITY)</div>
+        <div class="abox info">Cluster mean SHAP vectors serve as the document store. Cosine similarity measures how well this student's reasoning profile matches the cluster archetype.</div>
+        <div id="z4-bars"></div>
+      </div>
+      <div class="panel">
+        <div class="ptitle">EXPLICIT RAG — KNN INDEX</div>
+        <div class="abox info">KNN index queried only for borderline cases. Majority vote on retrieved outcomes.</div>
+        <div class="mbox" style="margin-top:10px"><div class="mbox-lbl">RAG INDEX SIZE</div><div class="mbox-val" id="z4-rag-size">—</div></div>
+        <div class="mbox" style="margin-top:8px"><div class="mbox-lbl">EXPLICIT RAG USED</div><div class="mbox-val" id="z4-rag-used">—</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">REACT PATHS — ALL 7 ROUTES</div>
+      <div class="abox ok" style="margin-bottom:4px"><span style="min-width:76px;display:inline-block;font-weight:700">PATH 0</span> Pre-Scoring Triage — attendance &lt;60% or hours &lt;2 → immediate HIGH RISK</div>
+      <div class="abox ok" style="margin-bottom:4px"><span style="min-width:76px;display:inline-block;font-weight:700">PATH 1</span> Confident Dispatch — i-Score ≥0.75 &amp; SHAP ≥0.55 &amp; no recheck</div>
+      <div class="abox ok" style="margin-bottom:4px"><span style="min-width:76px;display:inline-block;font-weight:700">PATH 2</span> Standard Monitoring — routine log &amp; action</div>
+      <div class="abox info" style="margin-bottom:4px"><span style="min-width:76px;display:inline-block;font-weight:700">PATH 3</span> RAG-Guided Majority Vote — borderline i-Score, RAG conf &gt;0.40</div>
+      <div class="abox warn" style="margin-bottom:4px"><span style="min-width:76px;display:inline-block;font-weight:700">PATH 4</span> RAG Tie-Break — RAG conf ≤0.40</div>
+      <div class="abox warn" style="margin-bottom:4px"><span style="min-width:76px;display:inline-block;font-weight:700">PATH 5</span> Model Uncertainty Fallback — SVM gap &lt;0.08</div>
+      <div class="abox warn" style="margin-bottom:4px"><span style="min-width:76px;display:inline-block;font-weight:700">PATH 6</span> RAG Zero-Evidence Fallback — RAG index unavailable</div>
+      <div class="abox crit" style="margin-bottom:10px"><span style="min-width:76px;display:inline-block;font-weight:700">PATH 7</span> Human Review — high entropy ≥1.50 OR ARIMA AGAINST</div>
+      <div class="ptitle" style="margin-top:10px">ACTIVE IN THIS SESSION</div>
+      <div id="z4-paths"><div class="abox info">No predictions yet.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ZONE 5 -->
+<div class="page" id="pg-z5">
+  <div class="detail">
+    <div class="dheader"><button class="back" onclick="goHome()">&#8592; Back</button><div class="dtitle">ZONE 5 — OUTCOME TRACKING</div></div>
+    <div class="g3">
+      <div class="mbox"><div class="mbox-lbl">RECOVERY RATE</div><div class="mbox-val green" id="z5-rr">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">IMPROVED</div><div class="mbox-val green" id="z5-imp">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">DECLINED</div><div class="mbox-val red" id="z5-dec">—</div></div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="ptitle">LOG STUDENT OUTCOME</div>
+      <div class="g2">
+        <div class="fg"><label class="flbl">STUDENT ID</label><input class="finp" id="o-sid" placeholder="e.g. S44021"/></div>
+        <div class="fg"><label class="flbl">OUTCOME</label>
+          <select class="finp" id="o-val"><option value="improved">Improved</option><option value="stable">Stable</option><option value="declined">Declined</option></select>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="flbl">NOTES</label><input class="finp" id="o-notes" placeholder="Intervention notes..."/></div>
+      <button class="fsubmit" onclick="logOutcome()">LOG OUTCOME</button>
+      <div id="o-msg" style="margin-top:10px;font-size:12px;color:var(--green)"></div>
+    </div>
+    <div class="panel"><div class="ptitle">STUDENTS WITH LOGGED OUTCOMES</div><div id="z5-list"></div></div>
+  </div>
+</div>
+
+<!-- ZONE 6 -->
+<div class="page" id="pg-z6">
+  <div class="detail">
+    <div class="dheader"><button class="back" onclick="goHome()">&#8592; Back</button><div class="dtitle">ZONE 6 — SYSTEM ALERTS &amp; DRIFT DETECTION</div></div>
+    <div class="g3">
+      <div class="mbox"><div class="mbox-lbl">SIGNAL A — SVM</div><div class="mbox-val green" id="z6-sa">—</div><div class="mbox-sub" id="z6-sa-val"></div></div>
+      <div class="mbox"><div class="mbox-lbl">SIGNAL B — DISTRIBUTION</div><div class="mbox-val green" id="z6-sb">—</div><div class="mbox-sub" id="z6-sb-val"></div></div>
+      <div class="mbox"><div class="mbox-lbl">RETRAIN DECISION</div><div class="mbox-val green" id="z6-ret">—</div></div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="ptitle">DUAL-SIGNAL DRIFT DETECTION</div>
+      <div class="abox info">Signal A alone = noise. Signal B alone = noise. <b>Both simultaneously = retrain trigger.</b></div>
+    </div>
+    <div class="panel"><div class="ptitle">ACTIVE ALERTS</div><div id="z6-alerts"></div></div>
+    <div class="panel"><div class="ptitle">6 AGENTIC PROPERTIES</div><div id="z6-agentic"></div></div>
+    <div class="g2">
+      <div class="mbox"><div class="mbox-lbl">STATUS</div><div class="mbox-val green" id="z6-status">—</div></div>
+      <div class="mbox"><div class="mbox-lbl">AVG SVM GAP</div><div class="mbox-val" id="z6-gap">—</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API='http://127.0.0.1:8000';
+
+// Clock
+setInterval(()=>{
+  document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+},1000);
+
+// Pages
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function goHome(){showPage('pg-home')}
+function goAdd(){showPage('pg-add')}
+function goZone(n){showPage('pg-z'+n);({1:loadZ1,2:loadZ2,3:loadZ3,4:loadZ4,5:loadZ5,6:loadZ6})[n]?.();}
+
+const RC=r=>r.includes('HIGH')?'H':r.includes('MEDIUM')?'M':r.includes('ESCALATE')?'E':'L';
+const RCOLOR={'H':'var(--red)','M':'var(--orange)','L':'var(--green)','E':'var(--purple)'};
+const RDOT={'H':'H','M':'M','L':'L','E':'H'};
+
+async function api(path,method='GET',body=null){
+  try{
+    const o={method,headers:{'Content-Type':'application/json'}};
+    if(body) o.body=JSON.stringify(body);
+    const r=await fetch(API+path,o);
+    if(!r.ok) throw new Error(r.status);
+    return await r.json();
+  }catch(e){console.warn('API:',e.message);return null}
+}
+
+// Stats
+async function loadStats(){
+  const d=await api('/stats'); if(!d) return;
+  ['t','h','m','l'].forEach((k,i)=>{document.getElementById('kpi-'+k).textContent=[d.total_analyzed,d.high_risk,d.medium_risk,d.low_risk][i];});
+  document.getElementById('h-total').textContent=d.total_analyzed;
+  document.getElementById('h-events').textContent=d.live_events;
+  document.getElementById('h-interv').textContent=d.active_interventions;
+  const c=Math.round(d.avg_confidence*100);
+  document.getElementById('h-conf').textContent=c+'%';
+  document.getElementById('h-conf-bar').style.width=c+'%';
+  document.getElementById('upd').textContent='Last Updated: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('z2m').textContent='Records: '+d.total_analyzed;
+  document.getElementById('z3m').textContent='Dispatched: '+d.active_interventions;
+}
+
+// Feed
+async function loadFeed(){
+  const d=await api('/live-feed?n=8'); if(!d||!d.feed.length) return;
+  const items=d.feed.map(f=>`<div class="fi"><div class="fdot ${RDOT[RC(f.risk_level)]}"></div><span class="fsid">${f.student_id}</span><span class="frisk" style="color:${RCOLOR[RC(f.risk_level)]}">${f.risk_level}</span><span style="color:var(--text2)">${f.action}</span><span class="ftime">${f.time_ago}</span></div>`).join('');
+  document.getElementById('feed-inner').innerHTML=items+items;
+}
+
+// ══════════════════════════════════════
+// LIVING CENTROIDS — Poll every 3s
+// ══════════════════════════════════════
+let _prevDelta = 0;
+
+async function updateLivingCentroids(){
+  const d = await api('/centroid-pulse');
+  if(!d) return;
+
+  const delta    = d.latest_delta || 0;
+  const isMoving = d.is_moving || delta > 0.001;
+
+  // Badge
+  const badge = document.getElementById('lc-badge');
+  const badgeTxt = document.getElementById('lc-badge-txt');
+  if(isMoving){
+    badge.classList.add('moving');
+    badgeTxt.textContent = 'SHIFTING';
+  } else {
+    badge.classList.remove('moving');
+    badgeTxt.textContent = 'STABLE';
+  }
+
+  // Delta bar — scale: delta 0.002 = 100%
+  const pct = Math.min((delta / 0.002) * 100, 100).toFixed(1);
+  const deltaBar = document.getElementById('lc-delta-bar');
+  const deltaVal = document.getElementById('lc-delta-val');
+  deltaBar.style.width = pct + '%';
+  if(isMoving){deltaBar.classList.add('hot');}else{deltaBar.classList.remove('hot');}
+  deltaVal.textContent = delta.toFixed(6);
+  if(isMoving){deltaVal.classList.add('hot');}else{deltaVal.classList.remove('hot');}
+
+  // Cluster bars — بيستخدم القيمة الأولى من كل centroid (feature 0)
+  if(d.centers && d.centers.length >= 3){
+    const vals = d.centers.map(c => c[0]); // أول feature لكل cluster
+    // normalize بين min و max عشان يبان في البار
+    const minV = Math.min(...vals);
+    const maxV = Math.max(...vals);
+    const range = (maxV - minV) || 1;
+    ['0','1','2'].forEach((i)=>{
+      const v = vals[parseInt(i)];
+      const barPct = ((v - minV) / range * 80 + 10).toFixed(1); // 10%-90%
+      const bar = document.getElementById('lc-bar-'+i);
+      bar.style.width = barPct + '%';
+      // shimmer لما بيتحرك
+      if(isMoving){bar.classList.add('active');}else{bar.classList.remove('active');}
+      document.getElementById('lc-val-'+i).textContent = v.toFixed(4);
+    });
+  }
+
+  // Footer chips
+  document.getElementById('lc-total-shifts').textContent = d.total_shifts || 0;
+  document.getElementById('lc-moving-count').textContent = d.moving_count || 0;
+  document.getElementById('lc-avg-delta').textContent    = (d.avg_delta||0).toFixed(6);
+  document.getElementById('lc-lr').textContent           = d.learning_rate || '0.02';
+
+  // Flash animation لو التغيير أكبر من السابق
+  if(delta > _prevDelta + 0.0001){
+    const w = document.getElementById('lc-widget');
+    w.classList.remove('flash');
+    void w.offsetWidth; // force reflow
+    w.classList.add('flash');
+  }
+  _prevDelta = delta;
+}
+
+// Zone 1
+async function loadZ1(){
+  const d=await api('/cluster-health'); if(!d) return;
+  document.getElementById('z1-fpc').textContent=(d.fpc*100).toFixed(1)+'%';
+  document.getElementById('z1-tot').textContent=d.total_analyzed;
+  document.getElementById('z1m').textContent='Cluster Stability: '+(d.cluster_stability*100).toFixed(1)+'%';
+  const dist=d.distribution; const total=Object.values(dist).reduce((a,b)=>a+b,0)||1;
+  const cols={'HIGH RISK':'var(--red)','MEDIUM RISK':'var(--orange)','LOW RISK':'var(--green)'};
+  document.getElementById('z1-dist').innerHTML=Object.entries(dist).map(([k,v])=>`
+    <div class="cbar-row"><div class="cbar-lbl">${k}</div>
+    <div class="cbar-wrap"><div class="cbar-fill" style="width:${(v/total*100).toFixed(1)}%;background:${cols[k]||'var(--blue)'}"></div></div>
+    <div class="cbar-num">${v}</div></div>`).join('');
+  document.getElementById('z1-clusters').innerHTML=d.clusters.map(c=>`
+    <div style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px">
+      <div style="font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--blue);margin-bottom:8px">CLUSTER ${c.cluster_id} — ${c.label.toUpperCase()}</div>
+      <div class="g2">
+        <div><div class="mbox-lbl">Students</div><div style="font-size:16px;font-weight:700;color:var(--text)">${c.count} (${c.pct}%)</div></div>
+        <div><div class="mbox-lbl">Trend</div><div style="font-size:14px;font-weight:600;color:${c.trend_mult>1?'var(--red)':c.trend_mult<1?'var(--green)':'var(--text2)'}">${c.arima_status} (×${c.trend_mult})</div></div>
+      </div>
+    </div>`).join('');
+  const feats=d.feature_names||['hours_studied','attendance','previous_scores','sleep_hours','tutoring_sessions'];
+  document.getElementById('z1-centers').innerHTML=`
+    <table><thead><tr><th>CLUSTER</th>${feats.map(f=>'<th>'+f.replace(/_/g,' ').toUpperCase()+'</th>').join('')}</tr></thead>
+    <tbody>${d.clusters.map(c=>`<tr><td style="color:var(--blue);font-weight:600">${c.label}</td>
+    ${c.center.map(v=>`<td class="mono">${v.toFixed(4)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+
+  // تحديث الـ Living Centroids widget لما نفتح Zone 1
+  updateLivingCentroids();
+}
+
+// Zone 2
+async function loadZ2(){
+  const [s,log]=await Promise.all([api('/stats'),api('/audit-log?limit=20')]);
+  if(s){document.getElementById('z2-triage').textContent=s.triage_triggered;document.getElementById('z2-avg').textContent=(s.avg_confidence*100).toFixed(1)+'%';document.getElementById('z2-rag').textContent=s.rag_index_size;}
+  if(log) document.getElementById('z2-table').innerHTML=log.records.slice(0,15).map(r=>`<tr>
+    <td class="mono" style="color:var(--blue)">${r.student_id}</td>
+    <td><span class="pill ${RC(r.risk_level)}">${r.risk_level}</span></td>
+    <td class="mono">${(r.intelligent_score*100).toFixed(1)}%</td>
+    <td class="mono">${((r.feature_risk||0)*100).toFixed(1)}%</td>
+    <td class="mono">${(r.svm_gap*100).toFixed(1)}%</td>
+    <td class="mono">${(r.mu_predicted*100).toFixed(1)}%</td>
+    <td style="color:${r.triage_triggered?'var(--orange)':'var(--green)'};font-size:10px;font-weight:600">${r.triage_triggered?'TRIAGE':'OK'}</td>
+    <td><span class="path-badge">PATH ${r.react_path}</span></td>
+    <td style="color:var(--text3);font-size:10px">${r.timestamp.slice(11,19)}</td></tr>`).join('');
+}
+
+// Zone 3
+async function loadZ3(){
+  const log=await api('/audit-log?limit=30'); if(!log) return;
+  const imm=log.records.filter(r=>r.action_plan.priority==='IMMEDIATE').length;
+  const std=log.records.filter(r=>r.action_plan.priority==='STANDARD').length;
+  const hrv=log.records.filter(r=>r.requires_human_review).length;
+  document.getElementById('z3-tot').textContent=log.records.length;
+  document.getElementById('z3-imm').textContent=imm;
+  document.getElementById('z3-std').textContent=std;
+  document.getElementById('z3-hr').textContent=hrv;
+  const ac={'WITH':'var(--green)','AGAINST':'var(--orange)','NEUTRAL':'var(--text2)'};
+  document.getElementById('z3-table').innerHTML=log.records.slice(0,15).map(r=>{
+    const av=r.arima_vote||r.arima_direction||'NEUTRAL';
+    return `<tr>
+    <td class="mono" style="color:var(--blue)">${r.student_id}</td>
+    <td><span class="pill ${RC(r.risk_level)}">${r.risk_level}</span></td>
+    <td><span class="path-badge">PATH ${r.react_path}</span></td>
+    <td style="font-size:11px">${r.action_plan.title}</td>
+    <td style="font-size:11px;color:var(--text2)">${r.action_plan.target}</td>
+    <td style="color:${r.action_plan.intensity==='HIGH'?'var(--red)':r.action_plan.intensity==='MEDIUM'?'var(--orange)':'var(--green)'};font-size:10px;font-weight:600">${r.action_plan.intensity}</td>
+    <td style="font-size:10px;font-weight:600;color:${ac[av]||'var(--text2)'}">${av}</td>
+    <td style="font-size:10px;color:var(--text2)">${r.action_plan.timing||'—'}</td>
+    <td style="font-size:10px;color:var(--text3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.nl_explanation}</td>
+    </tr>`;}).join('');
+}
+
+// Zone 4
+async function loadZ4(){
+  const [d,log]=await Promise.all([api('/shap-reliability'),api('/audit-log?limit=15')]);
+  if(d){
+    document.getElementById('z4-avg').textContent=(d.avg_reliability*100).toFixed(1)+'%';
+    document.getElementById('z4-status').textContent=d.status;
+    document.getElementById('z4-status').style.color=d.status==='HIGH'?'var(--green)':d.status==='MEDIUM'?'var(--orange)':'var(--red)';
+    document.getElementById('z4-wr').textContent=d.arima_with_rag||0;
+    document.getElementById('z4-ar').textContent=d.arima_against_rag||0;
+    document.getElementById('z4-rag-size').textContent=d.rag_index_size||0;
+    document.getElementById('z4-rag-used').textContent=d.explicit_rag_used||0;
+    document.getElementById('z4m').textContent='Explainability: '+d.status;
+    const pn={0:'Pre-Scoring Triage',1:'Confident Dispatch',2:'Standard Monitoring',3:'RAG-Guided Majority Vote',4:'RAG Tie-Break',5:'Model Uncertainty Fallback',6:'RAG Zero-Evidence Fallback',7:'Human Review Escalation'};
+    const pc={0:'ok',1:'ok',2:'ok',3:'info',4:'warn',5:'warn',6:'warn',7:'crit'};
+    document.getElementById('z4-paths').innerHTML=(d.paths_used||[]).sort((a,b)=>a-b).map(p=>`
+      <div class="abox ${pc[p]||'info'}" style="margin-bottom:6px">
+        <span style="font-weight:700;min-width:60px;display:inline-block">PATH ${p}</span>
+        ${pn[p]||'Unknown'} &mdash; <span style="opacity:.75">active in this session</span>
+      </div>`).join('')||'<div class="abox info">No predictions yet.</div>';
+  }
+  if(log) document.getElementById('z4-bars').innerHTML=log.records.map(r=>`
+    <div class="cbar-row">
+      <div class="cbar-lbl mono" style="font-size:10px">${r.student_id}</div>
+      <div class="cbar-wrap"><div class="cbar-fill" style="width:${(r.shap_reliability*100).toFixed(1)}%;background:linear-gradient(90deg,var(--blue-dim),var(--blue))"></div></div>
+      <div class="cbar-num">${(r.shap_reliability*100).toFixed(0)}%</div>
+    </div>`).join('');
+}
+
+// Zone 5
+async function loadZ5(){
+  const d=await api('/outcome-stats'); if(!d) return;
+  document.getElementById('z5-rr').textContent=(d.recovery_rate*100).toFixed(0)+'%';
+  document.getElementById('z5-imp').textContent=d.improved||0;
+  document.getElementById('z5-dec').textContent=d.declined||0;
+  document.getElementById('z5m').textContent='Recovery Rate: '+(d.recovery_rate*100).toFixed(0)+'%';
+  document.getElementById('z5-list').innerHTML=(d.students_logged||[]).length?
+    d.students_logged.map(s=>`<div class="abox ok">${s}</div>`).join(''):
+    '<div class="abox info">No outcomes logged yet.</div>';
+}
+async function logOutcome(){
+  const sid=document.getElementById('o-sid').value.trim();
+  const val=document.getElementById('o-val').value;
+  const notes=document.getElementById('o-notes').value.trim();
+  if(!sid){document.getElementById('o-msg').textContent='Please enter a Student ID';return}
+  const d=await api('/outcome','POST',{student_id:sid,outcome:val,notes:notes||null});
+  if(d){document.getElementById('o-msg').textContent=`Logged: ${val.toUpperCase()} for ${sid} | Recovery Rate: ${(d.recovery_rate*100).toFixed(0)}%`;loadZ5();}
+}
+
+// Zone 6
+async function loadZ6(){
+  const [drift,agent]=await Promise.all([api('/drift-status'),api('/agentic-audit')]);
+  if(drift){
+    const sa=document.getElementById('z6-sa');
+    sa.textContent=drift.signal_a?'ALERT':'STABLE';sa.className='mbox-val '+(drift.signal_a?'red':'green');
+    document.getElementById('z6-sa-val').textContent=`Gap trend: ${(drift.gap_trend||0).toFixed(4)}`;
+    const sb=document.getElementById('z6-sb');
+    sb.textContent=drift.signal_b?'ALERT':'STABLE';sb.className='mbox-val '+(drift.signal_b?'red':'green');
+    document.getElementById('z6-sb-val').textContent=`FR std: ${(drift.fr_std||0).toFixed(4)}`;
+    const rt=document.getElementById('z6-ret');
+    rt.textContent=drift.should_retrain?'REQUIRED':'NOT NEEDED';rt.className='mbox-val '+(drift.should_retrain?'red':'green');
+    document.getElementById('z6-status').textContent=drift.status;
+    document.getElementById('z6-status').style.color=drift.status==='STABLE'?'var(--green)':drift.status==='WARNING'?'var(--orange)':'var(--red)';
+    document.getElementById('z6-gap').textContent=(drift.avg_svm_gap||0).toFixed(4);
+    const m=drift.alerts?.length;
+    document.getElementById('z6m').textContent='Active Alerts: '+(m||0);
+    document.getElementById('z6m').style.color=(m||0)>0?'var(--red)':'var(--green)';
+    document.getElementById('z6-alerts').innerHTML=(!drift.alerts||!drift.alerts.length)?
+      '<div class="abox ok">All systems nominal.</div>':
+      drift.alerts.map(a=>`<div class="abox ${a.type==='CRITICAL'?'crit':'warn'}">${a.message}</div>`).join('');
+  }
+  if(agent){
+    const props=agent.properties||[];
+    document.getElementById('z6-agentic').innerHTML=props.length?props.map(p=>`
+      <div class="ag-row">
+        <div class="ag-num">${p.id}</div>
+        <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px">${p.name}</div>
+        <div style="font-size:11px;color:var(--text2)">${p.evidence||''}</div></div>
+        <div class="ag-status ${p.status||'ACTIVE'}">${p.status||'ACTIVE'}</div>
+      </div>`).join(''):'<div class="abox info">No agentic data yet.</div>';
+  }
+}
+
+// Add Student Form
+const FIELDS=[
+  {k:'hours_studied',l:'Hours Studied',min:0,max:44,step:.5,def:20},
+  {k:'attendance',l:'Attendance (%)',min:0,max:100,step:1,def:75},
+  {k:'previous_scores',l:'Previous Scores',min:0,max:100,step:1,def:70},
+  {k:'sleep_hours',l:'Sleep Hours',min:2,max:12,step:.5,def:7},
+  {k:'motivation_level',l:'Motivation (0-2)',min:0,max:2,step:1,def:1},
+  {k:'parental_involvement',l:'Parental Involvement (0-2)',min:0,max:2,step:1,def:1},
+  {k:'tutoring_sessions',l:'Tutoring Sessions',min:0,max:8,step:1,def:2},
+  {k:'access_to_resources',l:'Access Resources (0-2)',min:0,max:2,step:1,def:1},
+  {k:'extracurricular_activities',l:'Extracurricular (0-1)',min:0,max:1,step:1,def:0},
+  {k:'internet_access',l:'Internet Access (0-1)',min:0,max:1,step:1,def:1},
+  {k:'family_income',l:'Family Income (0-2)',min:0,max:2,step:1,def:1},
+  {k:'teacher_quality',l:'Teacher Quality (0-2)',min:0,max:2,step:1,def:1},
+  {k:'school_type',l:'School Type (0-1)',min:0,max:1,step:1,def:0},
+  {k:'peer_influence',l:'Peer Influence (0-2)',min:0,max:2,step:1,def:1},
+  {k:'physical_activity',l:'Physical Activity',min:0,max:6,step:1,def:3},
+  {k:'learning_disabilities',l:'Learning Disabilities (0-1)',min:0,max:1,step:1,def:0},
+  {k:'parental_education_level',l:'Parental Education (0-2)',min:0,max:2,step:1,def:1},
+  {k:'distance_from_home',l:'Distance Home (0-2)',min:0,max:2,step:1,def:1},
+  {k:'gender',l:'Gender (0=F,1=M)',min:0,max:1,step:1,def:0},
+];
+document.getElementById('add-form').innerHTML=FIELDS.map(f=>`
+  <div class="fg"><label class="flbl">${f.l}</label>
+  <input class="finp" type="number" id="f-${f.k}" min="${f.min}" max="${f.max}" step="${f.step}" value="${f.def}"/></div>`).join('');
+
+async function submitStudent(){
+  const b={student_id:'S'+Date.now()};
+  FIELDS.forEach(f=>b[f.k]=parseFloat(document.getElementById('f-'+f.k).value)||0);
+  document.getElementById('add-result').innerHTML=`<div class="panel" style="text-align:center;padding:30px;color:var(--text2)"><div class="spinner"></div><div style="margin-top:8px;font-size:12px">Running full ReAct analysis...</div></div>`;
+  const d=await api('/predict','POST',b);
+  if(!d){document.getElementById('add-result').innerHTML='<div class="abox warn">API error</div>';return}
+  document.getElementById('add-result').innerHTML=renderResult(d);
+  loadStats();loadFeed();
+  // ✅ تحديث الـ Living Centroids بعد إضافة طالب مباشرةً
+  updateLivingCentroids();
+}
+
+async function goRandom(){
+  showPage('pg-random');
+  document.getElementById('rand-loading').style.display='block';
+  document.getElementById('rand-result').style.display='none';
+  const d=await api('/random-student');
+  document.getElementById('rand-loading').style.display='none';
+  if(!d){document.getElementById('rand-result').innerHTML='<div class="abox warn">API error</div>';document.getElementById('rand-result').style.display='block';return}
+  document.getElementById('rand-result').innerHTML=renderResult(d,true);
+  document.getElementById('rand-result').style.display='block';
+  loadStats();loadFeed();
+  // ✅ تحديث الـ Living Centroids بعد Random Student
+  updateLivingCentroids();
+}
+
+function renderResult(d,extended=false){
+  const rc=RC(d.risk_level);
+  const trig=d.triage_triggered?`<div class="abox warn" style="margin-bottom:12px">Pre-Scoring Triage: ${d.triage_reasons.join(', ')}</div>`:'';
+  const steps=(d.action_plan.steps||[]).map(s=>`<li>${s}</li>`).join('');
+  const extra=extended?`
+    <div class="panel" style="margin-top:0">
+      <div class="ptitle">SIGNAL BREAKDOWN</div>
+      <div class="g4">
+        <div class="mbox"><div class="mbox-lbl">FEATURE RISK</div><div class="mbox-val">${((d.feature_risk||0)*100).toFixed(1)}%</div></div>
+        <div class="mbox"><div class="mbox-lbl">SVM GAP</div><div class="mbox-val">${(d.svm_gap*100).toFixed(1)}%</div></div>
+        <div class="mbox"><div class="mbox-lbl">FCM μ</div><div class="mbox-val">${(d.mu_predicted*100).toFixed(1)}%</div></div>
+        <div class="mbox"><div class="mbox-lbl">SHAP REL</div><div class="mbox-val">${(d.shap_reliability*100).toFixed(1)}%</div></div>
+      </div>
+      <div class="g3" style="margin-top:10px">
+        <div class="mbox"><div class="mbox-lbl">ARIMA</div><div class="mbox-val" style="font-size:14px;color:${(d.arima_vote||d.arima_direction)==='WITH'?'var(--green)':(d.arima_vote||d.arima_direction)==='AGAINST'?'var(--orange)':'var(--text2)'}">${d.arima_vote||d.arima_direction||'NEUTRAL'}</div></div>
+        <div class="mbox"><div class="mbox-lbl">RAG MAJORITY</div><div class="mbox-val" style="font-size:16px">${d.rag_majority!==null&&d.rag_majority!==undefined?['LOW','MED','HIGH'][d.rag_majority]:'N/A'}</div></div>
+        <div class="mbox"><div class="mbox-lbl">CENTROID Δ</div><div class="mbox-val" style="font-size:14px;color:var(--cyan)">${(d.centroid_delta||0).toFixed(6)}</div><div class="mbox-sub">Online FCM shift</div></div>
+      </div>
+    </div>`:'';
+  return `${trig}
+  <div class="rcard ${rc}">
+    <div class="rrisk ${rc}">${d.risk_level}</div>
+    <div class="rnl">${d.nl_explanation}</div>
+    <div class="chips">
+      <div class="chip">I-Score <b>${(d.intelligent_score*100).toFixed(1)}%</b></div>
+      <div class="chip">Feature Risk <b>${((d.feature_risk||0)*100).toFixed(1)}%</b></div>
+      <div class="chip">SVM Gap <b>${(d.svm_gap*100).toFixed(1)}%</b></div>
+      <div class="chip">μ(FCM) <b>${(d.mu_predicted*100).toFixed(1)}%</b></div>
+      <div class="chip">SHAP <b>${(d.shap_reliability*100).toFixed(1)}%</b></div>
+      <div class="chip">ARIMA <b>${d.arima_direction}</b></div>
+      <div class="chip">Path <b>${d.react_path} — ${d.react_path_name}</b></div>
+      <div class="chip">Centroid Δ <b style="color:var(--cyan)">${(d.centroid_delta||0).toFixed(6)}</b></div>
+      ${d.triage_triggered?'<div class="chip" style="border-color:var(--orange);color:var(--orange)">TRIAGE <b>TRIGGERED</b></div>':''}
+    </div>
+    <div class="ptitle">ACTION PLAN — ${d.action_plan.priority} · ${d.action_plan.timing||''}</div>
+    <div style="font-size:13px;color:var(--blue);font-weight:600;margin-bottom:4px">${d.action_plan.title}</div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Target: ${d.action_plan.target} · Intensity: ${d.action_plan.intensity}</div>
+    <ul class="steps-list">${steps}</ul>
+    <div class="rmeta" style="margin-top:12px">Feature: <span>${d.dominant_feature}</span> | Student: <span>${d.student_id}</span> | ${d.timestamp.slice(11,19)}</div>
+  </div>${extra}`;
+}
+
+// Auto-refresh
+loadStats();loadFeed();
+setInterval(loadStats,5000);
+setInterval(loadFeed,8000);
+// ✅ Living Centroids — بيتحدث كل 3 ثواني تلقائياً
+setInterval(updateLivingCentroids,3000);
+</script>
+</body>
+</html>
