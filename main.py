@@ -29,10 +29,10 @@ warnings.filterwarnings("ignore")
 SMTP_SERVER    = "smtp.gmail.com"
 SMTP_PORT      = 587
 
-EMAIL_ADDRESS  = "taah155929@gmail.com"
+EMAIL_ADDRESS  = "student@gmail.com"
 EMAIL_PASSWORD = "mztc gzyo hgzl qqbm"
 
-SUPERVISOR_EMAIL = "t74033141@gmail.com" 
+SUPERVISOR_EMAIL = "SUPERVISOR@gmail.com" 
 
 MODEL_DIR = "./models"
 
